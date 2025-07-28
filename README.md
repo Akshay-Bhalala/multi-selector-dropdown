@@ -2,7 +2,6 @@
 
 A powerful React component for multi-select dropdown with API-driven options, search capability, and add new option functionality. Built with TypeScript and designed for modern React applications.
 
-![Multi-Selector Dropdown](multi-selector-dropdown.png)
 
 *The component in action - showing selected options with visual tags and JSON output*
 
@@ -17,6 +16,14 @@ A powerful React component for multi-select dropdown with API-driven options, se
 - **♿ Accessible**: Built with accessibility in mind
 - **🛡️ Error Handling**: Comprehensive error handling for API failures
 - **📱 Responsive**: Works seamlessly across different screen sizes
+
+
+## 🖼️ Screenshot
+
+![multi-selector-dropdown-screenshot](./public/multi-selector-dropdown.png)
+
+---
+
 
 ## 📦 Installation
 
@@ -398,13 +405,16 @@ MIT
 4. Add tests
 5. Submit a pull request
 
-## Support
+## 💡 Contributing
+Pull requests and issues are welcome! Please open an issue or PR on [GitHub](https://github.com/Akshay-Bhalala/multi-selector-dropdown.git).
 
-For support, please open an issue on GitHub or contact the maintainers.
+---
 
-## 👨‍💻 Author
+## 👤 Author
+**Akshay Bhalala**  
+[akshaybhalala@gmail.com](mailto:akshaybhalala@gmail.com)
 
-**Akshay Bhalala** 
+---
 
 ### 🤝 Contributing
 
