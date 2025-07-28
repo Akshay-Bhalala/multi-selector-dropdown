@@ -2,7 +2,6 @@
 
 A powerful React component for multi-select dropdown with API-driven options, search capability, and add new option functionality. Built with TypeScript and designed for modern React applications.
 
-![multi-selector-dropdown-screenshot](./multi-selector-dropdown.png)
 
 ## ✨ Features
 
@@ -40,82 +39,103 @@ You'll also need to import the required CSS in your application:
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 ```
 
+## 📸 Snapshot
+
+![multi-selector-dropdown-screenshot](./public/multi-selector-dropdown.png)
+
+
 ## 🚀 Basic Usage
 
 A simple example showing the basic functionality of the component:
 
 ```tsx
-import React, { useState } from 'react';
-import MultiSelectorDropdown from 'multi-selector-dropdown';
-import { Option } from 'multi-selector-dropdown';
+import { useState, useEffect } from 'react';
+import { Typeahead } from 'react-bootstrap-typeahead';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
+import './App.css'; // Assuming you have some custom styles
+
+interface UserOption {
+  id: string | number;
+  label: string;
+}
 
 function App() {
-  const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
+  const [selectedOptions, setSelectedOptions] = useState<UserOption[]>([]);
+  const [options, setOptions] = useState<UserOption[]>([]);
 
-  // Mock API function to simulate adding new options
-  const handleAddNew = async (value: string): Promise<Option | null> => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Return the new option
-    return {
-      id: `new-${Date.now()}`,
-      label: value,
-    };
-  };
+  useEffect(() => {
+    const dummyUsers: UserOption[] = [
+      { id: '1', label: 'Alice Johnson' },
+      { id: '2', label: 'Bob Smith' },
+      { id: '3', label: 'Charlie Davis' },
+      { id: '4', label: 'Diana Ross' },
+      { id: '5', label: 'Ethan Brown' },
+    ];
+    setOptions(dummyUsers);
+  }, []);
 
-  const handleChange = (options: Option[]) => {
-    setSelectedOptions(options);
-    console.log('Selected options:', options);
-  };
-
-  const handleSearch = (searchTerm: string) => {
-    console.log('Search term:', searchTerm);
+  const handleAddNew = (value: string): UserOption => {
+    const newUser = { id: `new-${Date.now()}`, label: value };
+    setOptions((prev) => [...prev, newUser]);
+    return newUser;
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Multi-Selector Dropdown - Basic Example</h2>
-      <p className="text-muted">
-        This example demonstrates the basic functionality of the MultiSelectorDropdown component.
-        Click on the input field to see the dropdown options appear.
-      </p>
-      
-      <div className="row">
-        <div className="col-md-6">
-          <MultiSelectorDropdown
-            apiUrl="https://jsonplaceholder.typicode.com/users"
-            placeholder="Search and select users..."
-            label="Select Users"
-            required={true}
-            allowAddNew={true}
-            addNewPrefix="Add new user: "
-            onAddNew={handleAddNew}
-            onChange={handleChange}
-            onSearch={handleSearch}
-            multiple={true}
-            maxSelections={5}
-            clearButton={true}
-            size="md"
-            error=""
-            touched={false}
-          />
-        </div>
-      </div>
+    <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+      <div className="container p-4 rounded-4 shadow-lg" style={{ maxWidth: '900px', backgroundColor: '#ffffff' }}>
+        <h2 className="text-center text-primary fw-bold mb-4">Multi-Selector Dropdown</h2>
+        <p className="text-center text-muted mb-5">
+          This example uses hardcoded data instead of fetching from an API.
+        </p>
 
-      {selectedOptions.length > 0 && (
-        <div className="mt-4">
-          <h4>Selected Options:</h4>
-          <ul className="list-group">
-            {selectedOptions.map((option) => (
-              <li key={option.id} className="list-group-item">
-                <strong>ID:</strong> {option.id} | <strong>Name:</strong> {option.label}
-              </li>
-            ))}
-          </ul>
+        <div className="row justify-content-center">
+          <div className="col-md-10">
+            <label className="form-label text-dark fw-semibold">Select Users*</label>
+            <Typeahead
+              id="user-multi-select"
+              labelKey="label"
+              multiple
+              allowNew
+              newSelectionPrefix="Add new user: "
+              options={options}
+              placeholder="Search and select users..."
+              onChange={(selected: any[]) => {
+                const cleanOptions: UserOption[] = selected.map((item) =>
+                  typeof item === 'string' ? handleAddNew(item) : item
+                );
+                setSelectedOptions(cleanOptions);
+              }}
+              selected={selectedOptions}
+              className="bg-white rounded-3 shadow-sm border border-secondary"
+            />
+          </div>
         </div>
-      )}
+
+        {selectedOptions.length > 0 && (
+          <div className="mt-5">
+            <h4 className="text-dark text-center fw-semibold mb-4">Selected Users</h4>
+            <div className="table-responsive">
+              <table className="table table-striped table-hover table-bordered">
+                <thead className="table-primary">
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedOptions.map((option) => (
+                    <tr key={option.id} className="align-middle">
+                      <td>{option.id}</td>
+                      <td>{option.label}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
