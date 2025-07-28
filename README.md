@@ -20,7 +20,7 @@ A powerful React component for multi-select dropdown with API-driven options, se
 
 ## 🖼️ Screenshot
 
-![multi-selector-dropdown-screenshot](./public/multi-selector-dropdown.png)
+![multi-selector-dropdown-screenshot](https://github.com/Akshay-Bhalala/multi-selector-dropdown/blob/Modification_01/public/multi-selector-dropdown.png)
 
 ---
 
