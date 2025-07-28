@@ -1,0 +1,74 @@
+{
+  "name": "multi-selector-dropdown",
+  "version": "1.0.2",
+  "type": "module",
+  "description": "A React component for multi-select dropdown with API-driven options, search capability, and add new option functionality",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "keywords": [
+    "react",
+    "dropdown",
+    "multi-select",
+    "typeahead",
+    "search",
+    "api",
+    "typescript",
+    "bootstrap",
+    "form-control",
+    "autocomplete",
+    "select",
+    "input",
+    "ui-component",
+    "react-component",
+    "javascript",
+    "frontend",
+    "web-development",
+    "user-interface",
+    "interactive",
+    "responsive"
+  ],
+  "author": "Akshay Bhalala",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "dependencies": {
+    "react-bootstrap-typeahead": "^6.3.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/node": "^20.0.0",
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "rollup": "^3.20.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "typescript": "^5.0.0",
+    "rimraf": "^5.0.0",
+    "jest": "^29.0.0",
+    "@testing-library/react": "^13.0.0",
+    "@testing-library/jest-dom": "^5.16.0",
+    "ts-jest": "^29.0.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest-environment-jsdom": "^29.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Akshay-Bhalala/multi-selector-dropdown"
+  },
+  "homepage": "https://github.com/Akshay-Bhalala/multi-selector-dropdown#readme"
+}
