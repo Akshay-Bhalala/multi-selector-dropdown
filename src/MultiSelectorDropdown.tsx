@@ -131,6 +131,7 @@ const MultiSelectorDropdown: React.FC<MultiSelectorDropdownProps> = ({
         setOptions(prev => [...prev, newOption]);
         setSelectedOptions(prev => [...prev, newOption]);
         setNewOptionLabel('');
+        setSearchTerm('');
         
         if (onChange) {
           onChange([...selectedOptions, newOption]);
@@ -152,7 +153,6 @@ const MultiSelectorDropdown: React.FC<MultiSelectorDropdownProps> = ({
   // Handle selection change
   const handleSelectionChange = useCallback((selected: any[]) => {
     const newSelections: Option[] = [];
-    const newOptions: Option[] = [];
 
     for (const item of selected) {
       if (typeof item === 'string' || (item as any)?.customOption) {
@@ -172,6 +172,7 @@ const MultiSelectorDropdown: React.FC<MultiSelectorDropdownProps> = ({
     }
 
     setSelectedOptions(newSelections);
+    setSearchTerm('');
     
     if (onChange) {
       onChange(newSelections);
@@ -227,7 +228,7 @@ const MultiSelectorDropdown: React.FC<MultiSelectorDropdownProps> = ({
           disabled={disabled}
           isLoading={loading}
           minLength={minSearchLength}
-          className={sizeClass}
+          className={`form-control ${sizeClass}`}
           onBlur={onBlur}
           onFocus={onFocus}
         />

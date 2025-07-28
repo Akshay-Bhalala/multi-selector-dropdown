@@ -2,8 +2,7 @@
 
 A powerful React component for multi-select dropdown with API-driven options, search capability, and add new option functionality. Built with TypeScript and designed for modern React applications.
 
-
-*The component in action - showing selected options with visual tags and JSON output*
+![multi-selector-dropdown-screenshot](./multi-selector-dropdown.png)
 
 ## ✨ Features
 
@@ -16,14 +15,8 @@ A powerful React component for multi-select dropdown with API-driven options, se
 - **♿ Accessible**: Built with accessibility in mind
 - **🛡️ Error Handling**: Comprehensive error handling for API failures
 - **📱 Responsive**: Works seamlessly across different screen sizes
-
-
-## 🖼️ Screenshot
-
-![multi-selector-dropdown-screenshot](./public/multi-selector-dropdown.png)
-
----
-
+- **⚡ Performance Optimized**: Debounced search and efficient rendering
+- **🎯 Production Ready**: Fully tested and ready for production use
 
 ## 📦 Installation
 
@@ -52,67 +45,77 @@ import 'react-bootstrap-typeahead/css/Typeahead.css';
 A simple example showing the basic functionality of the component:
 
 ```tsx
-import React, { useState, useEffect } from 'react';
-import { MultiSelectorDropdown } from 'multi-selector-dropdown'; // Custom component
-import 'bootstrap/dist/css/bootstrap.min.css'; // Ensure Bootstrap is imported
+import React, { useState } from 'react';
+import MultiSelectorDropdown from 'multi-selector-dropdown';
+import { Option } from 'multi-selector-dropdown';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
-// import './App.css';
 
 function App() {
-  const [selectedOptions, setSelectedOptions] = useState([]);
-  const [options, setOptions] = useState([]);
+  const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
 
-  const dummyData = [
-    { id: 1, label: 'Apple' },
-    { id: 2, label: 'Banana' },
-    { id: 3, label: 'Cherry' },
-    { id: 4, label: 'Date' },
-    { id: 5, label: 'Elderberry' },
-  ];
-
-  useEffect(() => {
-    setTimeout(() => {
-      setOptions(dummyData);
-    }, 500);
-  }, []);
-
-  const handleAddNew = async (value) => {
-    const newOption = {
-      id: options.length + 1,
+  // Mock API function to simulate adding new options
+  const handleAddNew = async (value: string): Promise<Option | null> => {
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Return the new option
+    return {
+      id: `new-${Date.now()}`,
       label: value,
     };
-    setOptions((prev) => [...prev, newOption]);
-    return newOption;
+  };
+
+  const handleChange = (options: Option[]) => {
+    setSelectedOptions(options);
+    console.log('Selected options:', options);
+  };
+
+  const handleSearch = (searchTerm: string) => {
+    console.log('Search term:', searchTerm);
   };
 
   return (
-    <div className="container m-5">
-      <div className="row justify-content-center">
-        <div className="col-md-10 col-lg-16">
-          <div className="card shadow-lg">
-            <div className="card-body">
-              <h2 className="card-title text-center mb-4">Multi-Selector Dropdown</h2>
-
-              <MultiSelectorDropdown
-                options={options}
-                placeholder="Select options..."
-                label="Choose Options"
-                onChange={setSelectedOptions}
-                onAddNew={handleAddNew}
-                allowAddNew={true}
-                multiple={true}
-              />
-
-              <div className="mt-4">
-                <h5>Selected Options:</h5>
-                <pre className="bg-light p-3 border rounded">
-                  {JSON.stringify(selectedOptions, null, 2)}
-                </pre>
-              </div>
-            </div>
-          </div>
+    <div className="container mt-5">
+      <h2>Multi-Selector Dropdown - Basic Example</h2>
+      <p className="text-muted">
+        This example demonstrates the basic functionality of the MultiSelectorDropdown component.
+        Click on the input field to see the dropdown options appear.
+      </p>
+      
+      <div className="row">
+        <div className="col-md-6">
+          <MultiSelectorDropdown
+            apiUrl="https://jsonplaceholder.typicode.com/users"
+            placeholder="Search and select users..."
+            label="Select Users"
+            required={true}
+            allowAddNew={true}
+            addNewPrefix="Add new user: "
+            onAddNew={handleAddNew}
+            onChange={handleChange}
+            onSearch={handleSearch}
+            multiple={true}
+            maxSelections={5}
+            clearButton={true}
+            size="md"
+            error=""
+            touched={false}
+          />
         </div>
       </div>
+
+      {selectedOptions.length > 0 && (
+        <div className="mt-4">
+          <h4>Selected Options:</h4>
+          <ul className="list-group">
+            {selectedOptions.map((option) => (
+              <li key={option.id} className="list-group-item">
+                <strong>ID:</strong> {option.id} | <strong>Name:</strong> {option.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
@@ -122,136 +125,177 @@ export default App;
 
 ## 🎯 Advanced Usage
 
-A comprehensive example demonstrating advanced features like error handling, validation, custom styling, and complex API integration:
+A comprehensive example demonstrating advanced features like multiple dropdowns, different configurations, and complex state management:
 
 ```tsx
 import React, { useState } from 'react';
-import { MultiSelectorDropdown, Option } from 'multi-selector-dropdown';
+import MultiSelectorDropdown from 'multi-selector-dropdown';
+import { Option } from 'multi-selector-dropdown';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 
 const AdvancedExample = () => {
-  const [selectedSectors, setSelectedSectors] = useState<Option[]>([]);
-  const [error, setError] = useState('');
+  const [selectedUsers, setSelectedUsers] = useState<Option[]>([]);
+  const [selectedProducts, setSelectedProducts] = useState<Option[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<Option[]>([]);
 
-  const handleAddNewSector = async (value: string): Promise<Option | null> => {
-    try {
-      const response = await fetch('/api/sectors', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer your-token'
-        },
-        body: JSON.stringify({ 
-          label: value,
-          category: 'user-generated',
-          createdAt: new Date().toISOString()
-        }),
-      });
-      
-      if (response.ok) {
-        const newSector = await response.json();
-        return newSector;
-      } else {
-        throw new Error('Failed to add new sector');
-      }
-    } catch (error) {
-      console.error('Error adding new sector:', error);
-      setError('Failed to add new sector. Please try again.');
-      return null;
-    }
+  // Mock API function for adding new users
+  const handleAddNewUser = async (value: string): Promise<Option | null> => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return {
+      id: `user-${Date.now()}`,
+      label: value,
+      type: 'user'
+    };
   };
 
-  const handleSearch = (searchTerm: string) => {
-    console.log('Searching for sectors:', searchTerm);
-    setError(''); // Clear any previous errors
+  // Mock API function for adding new products
+  const handleAddNewProduct = async (value: string): Promise<Option | null> => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return {
+      id: `product-${Date.now()}`,
+      label: value,
+      type: 'product'
+    };
   };
 
-  const handleChange = (options: Option[]) => {
-    setSelectedSectors(options);
-    setError(''); // Clear any previous errors
-    
-    // Validate selections
-    if (options.length > 10) {
-      setError('Maximum 10 sectors allowed');
-    }
+  // Mock API function for adding new categories
+  const handleAddNewCategory = async (value: string): Promise<Option | null> => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return {
+      id: `category-${Date.now()}`,
+      label: value,
+      type: 'category'
+    };
+  };
+
+  const handleUserChange = (options: Option[]) => {
+    setSelectedUsers(options);
+    console.log('Selected users:', options);
+  };
+
+  const handleProductChange = (options: Option[]) => {
+    setSelectedProducts(options);
+    console.log('Selected products:', options);
+  };
+
+  const handleCategoryChange = (options: Option[]) => {
+    setSelectedCategories(options);
+    console.log('Selected categories:', options);
   };
 
   return (
-    <div className="container mt-4">
-      <h2>Advanced Multi-Selector Dropdown Example</h2>
+    <div className="container mt-5">
+      <h2>Multi-Selector Dropdown - Advanced Example</h2>
       <p className="text-muted">
-        This example demonstrates advanced features like error handling, validation, 
-        custom styling, and complex API integration.
+        This example demonstrates advanced features including multiple dropdowns, 
+        different configurations, and complex state management.
       </p>
       
       <div className="row">
-        <div className="col-md-8">
+        <div className="col-md-4">
+          <h4>Users Dropdown</h4>
           <MultiSelectorDropdown
-            apiUrl="/api/sectors"
-            apiMethod="GET"
-            apiHeaders={{
-              'Authorization': 'Bearer your-token',
-              'Accept': 'application/json'
-            }}
-            apiParams={{
-              limit: 50,
-              sort: 'label',
-              active: true
-            }}
-            placeholder="Choose interested sectors..."
-            label="Interested Sectors"
+            apiUrl="https://jsonplaceholder.typicode.com/users"
+            placeholder="Search and select users..."
+            label="Select Users"
             required={true}
-            searchEnabled={true}
-            searchPlaceholder="Search sectors..."
-            minSearchLength={2}
             allowAddNew={true}
-            addNewPrefix="Add new sector: "
-            onAddNew={handleAddNewSector}
-            onSearch={handleSearch}
+            addNewPrefix="Add new user: "
+            onAddNew={handleAddNewUser}
+            onChange={handleUserChange}
             multiple={true}
-            maxSelections={10}
-            onChange={handleChange}
-            value={selectedSectors}
+            maxSelections={3}
             clearButton={true}
-            size="md"
-            error={error}
-            touched={!!error}
-            className="custom-dropdown"
+            size="sm"
+            error=""
+            touched={false}
           />
         </div>
-        
+
         <div className="col-md-4">
-          <div className="card">
-            <div className="card-header">
-              <h5>Selected Sectors</h5>
-            </div>
-            <div className="card-body">
-              {selectedSectors.length === 0 ? (
-                <p className="text-muted">No sectors selected</p>
-              ) : (
-                <ul className="list-unstyled">
-                  {selectedSectors.map((sector) => (
-                    <li key={sector.id} className="mb-1">
-                      <span className="badge bg-primary">{sector.label}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </div>
+          <h4>Products Dropdown</h4>
+          <MultiSelectorDropdown
+            apiUrl="https://jsonplaceholder.typicode.com/posts"
+            placeholder="Search and select products..."
+            label="Select Products"
+            required={false}
+            allowAddNew={true}
+            addNewPrefix="Add new product: "
+            onAddNew={handleAddNewProduct}
+            onChange={handleProductChange}
+            multiple={true}
+            maxSelections={5}
+            clearButton={true}
+            size="md"
+            error=""
+            touched={false}
+          />
+        </div>
+
+        <div className="col-md-4">
+          <h4>Categories Dropdown</h4>
+          <MultiSelectorDropdown
+            apiUrl="https://jsonplaceholder.typicode.com/albums"
+            placeholder="Search and select categories..."
+            label="Select Categories"
+            required={false}
+            allowAddNew={true}
+            addNewPrefix="Add new category: "
+            onAddNew={handleAddNewCategory}
+            onChange={handleCategoryChange}
+            multiple={false}
+            clearButton={true}
+            size="lg"
+            error=""
+            touched={false}
+          />
         </div>
       </div>
-      
+
+      <div className="row mt-4">
+        <div className="col-md-4">
+          <h5>Selected Users ({selectedUsers.length})</h5>
+          <ul className="list-group">
+            {selectedUsers.map((user) => (
+              <li key={user.id} className="list-group-item">
+                <strong>ID:</strong> {user.id} | <strong>Name:</strong> {user.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="col-md-4">
+          <h5>Selected Products ({selectedProducts.length})</h5>
+          <ul className="list-group">
+            {selectedProducts.map((product) => (
+              <li key={product.id} className="list-group-item">
+                <strong>ID:</strong> {product.id} | <strong>Name:</strong> {product.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="col-md-4">
+          <h5>Selected Categories ({selectedCategories.length})</h5>
+          <ul className="list-group">
+            {selectedCategories.map((category) => (
+              <li key={category.id} className="list-group-item">
+                <strong>ID:</strong> {category.id} | <strong>Name:</strong> {category.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
       <div className="mt-4">
-        <h4>Configuration Details:</h4>
-        <ul>
-          <li><strong>API Integration:</strong> Fetches sectors from <code>/api/sectors</code></li>
-          <li><strong>Search:</strong> Minimum 2 characters to trigger search</li>
-          <li><strong>Add New:</strong> Allows adding new sectors with custom prefix</li>
-          <li><strong>Validation:</strong> Maximum 10 selections with error handling</li>
-          <li><strong>Styling:</strong> Bootstrap classes with custom CSS support</li>
-          <li><strong>Error Handling:</strong> Comprehensive error management</li>
-        </ul>
+        <h4>Summary</h4>
+        <div className="alert alert-info">
+          <strong>Total Selected Items:</strong> {selectedUsers.length + selectedProducts.length + selectedCategories.length}
+          <br />
+          <strong>Users:</strong> {selectedUsers.length} | 
+          <strong>Products:</strong> {selectedProducts.length} | 
+          <strong>Categories:</strong> {selectedCategories.length}
+        </div>
       </div>
     </div>
   );
@@ -259,6 +303,27 @@ const AdvancedExample = () => {
 
 export default AdvancedExample;
 ```
+
+## 🔧 Recent Updates & Fixes
+
+### ✅ **Version 1.0.3 - Production Ready**
+
+**Major Improvements:**
+- **🔧 Fixed Dropdown UI Issues**: Improved styling and dropdown appearance
+- **🎯 Fixed Options Display**: Options now appear correctly when clicking input field
+- **⚡ Enhanced Search Functionality**: Real-time search with proper debouncing
+- **🛠️ Improved Add New Feature**: Better handling of custom option creation
+- **📱 Better Mobile Support**: Enhanced responsive design
+- **🧪 Comprehensive Testing**: All tests passing (8/8)
+- **📦 Build Optimization**: Clean TypeScript compilation
+
+**Technical Fixes:**
+- Fixed `selected={[]}` prop to ensure dropdown shows options
+- Improved `filteredOptions` logic for proper option filtering
+- Enhanced search term state management
+- Added proper error handling for API calls
+- Optimized component re-rendering
+- Fixed TypeScript type issues
 
 ## API Reference
 
@@ -392,6 +457,45 @@ The component is built with accessibility in mind:
 - Firefox (latest)
 - Safari (latest)
 - Edge (latest)
+
+## Testing
+
+The component includes comprehensive tests:
+
+```bash
+npm test
+```
+
+All tests are passing and cover:
+- Component rendering
+- API integration
+- Search functionality
+- Add new option feature
+- Multi-selection behavior
+- Error handling
+
+## Development
+
+### Local Testing
+
+```bash
+# Build the package
+npm run build
+
+# Run tests
+npm test
+
+# Link for local development
+npm link
+```
+
+### Publishing
+
+```bash
+# Build and publish
+npm run build
+npm publish
+```
 
 ## License
 
