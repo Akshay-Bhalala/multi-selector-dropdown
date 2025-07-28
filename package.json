@@ -1,6 +1,6 @@
 {
   "name": "multi-selector-dropdown",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "type": "module",
   "description": "A React component for multi-select dropdown with API-driven options, search capability, and add new option functionality",
   "main": "dist/index.js",
